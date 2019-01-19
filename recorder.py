@@ -19,12 +19,9 @@ sd.wait()
 print("Play Audio Complete")
 
 wav.write('test.wav', fs, myrecording)
-print("checkpoint2")
 data, samplerate = sf.read('test.wav')
+sf.write('./new.flac', data, samplerate)
 
-print("checkpoint4")
-sf.write('new.flac', data, samplerate)
-print("checkpoint1")
 
 # Instantiates a client
 client = speech.SpeechClient()
@@ -41,10 +38,7 @@ config = types.RecognitionConfig(
     language_code='en-US')
 
 # Detects speech in the audio file
-print("before")
 response = client.recognize(config, audio)
-print("after")
+
 for result in response.results:
     print('Transcript: {}'.format(result.alternatives[0].transcript))
-
-
