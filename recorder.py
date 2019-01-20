@@ -1,3 +1,4 @@
+# @author: Kyle Droulard
 import io
 import os
 import sounddevice as sd
@@ -87,8 +88,8 @@ def saveas(ftype, strout, ffile):
         ffile += ".pdf"
         pdf.output(ffile, 'F')
         print('converted as pdf file')
-        
-        
+
+
 print("type 1 to convert a file 2 to record a file: ")
 choice = int(input())
 if choice == 1:
