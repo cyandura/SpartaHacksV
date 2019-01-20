@@ -4,50 +4,69 @@ import os
 import sounddevice as sd
 import scipy.io.wavfile as wav
 import soundfile as sf
+from fpdf import FPDF
 from google.cloud import speech
 from google.cloud.speech import enums
 from google.cloud.speech import types
-
-# 9999<fs
+# Global Variables
+# fs = 16000 recomended
 fs = 16000
-duration = 20
-myrecording = sd.rec(duration * fs, samplerate=fs, channels=1, dtype='float64')
-print("Recording Audio")
-sd.wait()
-print("Audio Recording Complete, Play Audio")
-sd.play(myrecording, fs)
-sd.wait()
-print("Play Audio Complete")
+sd.default.samplerate=fs
+sd.default.channels=1
 
-wav.write('test.wav', fs, myrecording)
-print("checkpoint2")
-data, samplerate = sf.read('test.wav')
-
-print("checkpoint4")
-sf.write('new.flac', data, samplerate)
-print("checkpoint1")
-
-# Instantiates a client
-client = speech.SpeechClient()
+class PDF(FPDF):
+    # Page footer
+    def footer(self):
+        # Position at 1.5 cm from bottom
+        self.set_y(-15)
+        # Arial italic 8
+        self.set_font('Arial', 'I', 8)
+        # Page number
+        pgnum = self.page_no()
+        pgnum = pgnum.__str__()
+        self.cell(0, 10, 'Page ' + pgnum , 0, 0, 'C')
 
 
-# Loads the audio into memory
-with io.open("./new.flac", 'rb') as audio_file:
-    content = audio_file.read()
-    audio = types.RecognitionAudio(content=content)
+def record(time, newfile):
+    myrecording = sd.rec(time * fs)
+    print("Recording Audio")
+    sd.wait()
+    print("Audio Recording Complete, Play Audio")
+    sd.play(myrecording, fs)
+    sd.wait()
+    print("Play Audio Complete")
 
-config = types.RecognitionConfig(
-    encoding=enums.RecognitionConfig.AudioEncoding.FLAC,
-    sample_rate_hertz=samplerate,
-    language_code='en-US')
+    newfile+=".wav"
+    wav.write(newfile, fs, myrecording)
+    data, samplerate = sf.read(newfile)
+    newfile = newfile.replace(".wav", ".flac")
+    newfile= "./" + newfile
+    sf.write(newfile, data, samplerate)
 
-# Detects speech in the audio file
-print("before")
-response = client.recognize(config, audio)
-print("after")
-for result in response.results:
-    print('Transcript: {}'.format(result.alternatives[0].transcript))
 
+#TODO: Implement a method to transcribe long length files
+def convert(fname):
+    # Instantiates a client
+    client = speech.SpeechClient()
+
+    # Loads the audio into memory
+    file= "./"+fname
+    with io.open(file, 'rb') as audio_file:
+        content = audio_file.read()
+        audio = types.RecognitionAudio(content=content)
+
+    config = types.RecognitionConfig(
+        encoding=enums.RecognitionConfig.AudioEncoding.FLAC,
+        sample_rate_hertz=fs,
+        language_code='en-US')
+
+    # Detects speech in the audio file
+    response = client.recognize(config, audio)
+
+    resstr = " "
+    for result in response.results:
+        resstr += format(result.alternatives[0].transcript)
+    return resstr
 
 
 # TODO: Implement a method for translating text to doc
@@ -94,4 +113,3 @@ if choice == 2:
     print("what type of file would you like to save it as: ")
     ftype = input()
     saveas(ftype, convert(newfname), sfile)
-
