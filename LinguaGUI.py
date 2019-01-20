@@ -7,6 +7,7 @@ frame.pack()
 
 recordframe = Frame(m)
 saveandconvertframe = Frame(m)
+gridframe = Frame(recordframe)
 
 menu = Menu(m)
 m.config(menu=menu)
@@ -23,12 +24,25 @@ v = IntVar()
 recordtime="default"
 filenametxt=""
 
+minutes=0
+seconds=0
+
+#recordframe
 Label(recordframe,text='Recording Time in Minutes:').grid(row=0, column=0)
 Label(recordframe, text='File Name:').grid(row=1, column=0)
-Label(saveandconvertframe, text='File Name:').grid(row=0, column=0)
-time1 = Entry(recordframe, textvariable=recordtime, width=35)
 filename1 = Entry(recordframe, textvariable=filenametxt, width=35)
+
+#gridframe in within recordframe
+minutesentry = Entry(gridframe,  width=16)
+secondsentry = Entry(gridframe,  width=16)
+
+minutesentry.insert(END, '0')
+secondsentry.insert(END, '0')
+
+#convertframe
+Label(saveandconvertframe, text='File Name:').grid(row=0, column=0)
 filename = Entry(saveandconvertframe, text='File Name: ', width=35)
+
 
 record = Button(recordframe, text='Record->Convert', command = lambda : recordbtn(recordtime), width=35)
 stop = Button(recordframe, text='Stop', width=35)
@@ -41,15 +55,22 @@ convert = Button(saveandconvertframe, text='Convert', width=40)
 stop.grid(row=3,column=0)
 record.grid(row=3, column=1)
 filename.grid(row=0, column=1)
-time1.grid(row=0, column=1)
+
+minutesentry.pack(side = LEFT)
+Label(gridframe, text=':').pack(side= LEFT)
+secondsentry.pack(side = LEFT)
+
 filename1.grid(row=1, column=1)
+
+gridframe.grid(row=0,column=1)
+
 
 convert.grid(row=3)
 saveas.grid(row=3,column=1)
 
 def recordmenu():
     recordframe.pack(side = LEFT)
-    #convertframe.pack_forget()
+
     saveandconvertframe.pack_forget()
     return
 
@@ -67,7 +88,10 @@ def txt():
 
 def recordbtn(time):
 
-    print(time1.get())
+    minutes = int(minutesentry.get())*60
+    seconds = int(secondsentry.get())
+    print(minutes+seconds)
+
     return
 
 def stopbtn():
