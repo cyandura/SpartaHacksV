@@ -1,5 +1,5 @@
 from tkinter import *
-
+from tkinter import filedialog
 m = Tk() #m is the name of the object
 
 frame = Frame(m)
@@ -23,7 +23,7 @@ helpmenu.add_command(label='About')
 v = IntVar()
 recordtime="default"
 filenametxt=""
-
+clicked=FALSE
 minutes=0
 seconds=0
 
@@ -50,7 +50,7 @@ Start = Button(m, text='Start', width=40)
 share = Button(m, text='Share', width=40)
 saveas = Button(saveandconvertframe, text='Save As', width=40)
 convert = Button(saveandconvertframe, text='Convert', width=40)
-
+upload = Button(saveandconvertframe, text='Upload', command = lambda : uploadbtn(), width=40)
 
 stop.grid(row=3,column=0)
 record.grid(row=3, column=1)
@@ -65,7 +65,8 @@ filename1.grid(row=1, column=1)
 gridframe.grid(row=0,column=1)
 
 
-convert.grid(row=3,column=1)
+convert.grid(row=3,column=0)
+upload.grid(row=3,column=1)
 
 
 def recordmenu():
@@ -99,6 +100,13 @@ def stopbtn():
 def convertbtn():
     return
 def saveasbtn():
+
+    return
+def uploadbtn():
+    clicked=TRUE
+    path = filedialog.askopenfilename()
+    filename.insert(0, str(path))
+
     return
 
 R1 = Radiobutton(m, text='Record', variable=v, value=1, command = lambda : recordmenu()).pack(anchor=W)
